@@ -1,0 +1,57 @@
+html 
+    head
+        link(rel="stylesheet"
+         href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" 
+         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
+         crossorigin="anonymous"
+        )
+        link(rel="stylesheet" 
+         href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"
+        )
+        script(src="https://code.jquery.com/jquery-3.6.1.min.js"
+         integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+         crossorigin="anonymous"
+        )
+        script(src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js" 
+         defer
+        )
+        script(defer).
+            $(document).ready( function () {
+            $('#tabla').DataTable();
+            } );
+    body
+        if borrado 
+            div.alert.alert-success #{borrado}
+        br
+        .container
+            div(style="display:flex;justify-content:space-between")
+                h1 Gestion de Medicos
+                a(href="/medico/alta")
+                    botton.btn.btn-info Dar de alta
+            br
+            table#tabla
+                thead
+                    tr 
+                        th ID
+                        th Nombre 
+                        th Especialidad 
+                        th Edad 
+                        th Foto
+                        th 
+                        th 
+                tbody
+                    each medico in medicos
+                        tr 
+                            td=medico.id
+                            td=medico.nombre
+                            td=medico.descripcion
+                            td=medico.edad
+                            td
+                                img.img-fluid(style="max-height:200px;" src=medico.urlImagen alt=medico.urlImagen)
+                            td 
+                                form(action=`medicos/${medico.id}?_method=DELETE` method="post")
+                                    input.btn.btn-danger(type="submit" value="BORRAR")
+                            td
+                                form(action=`medico/editar/${medico.id}` method="get")
+                                    input.btn.btn-primary(type="submit" value="Editar")
+                            
