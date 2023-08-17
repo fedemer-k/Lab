@@ -13,7 +13,7 @@ app.use(express.urlencoded());                      //urlencoded, toma todo lo q
 app.use(methodOverride("_method"));                 //debo hacer un USE para que pueda sobreescribir el metodo
 app.use(upload({limits: {fileSize: 50 * 1024 * 1024}}));                                  //este middleware, agrega el objeto files al req, y solo acpeta archivos menores a 50mb
 app.use(express.static("./imagenes"));              //para poder acceder a las imagenes
-app.set("views", "vistas");                         //indico donde van a estar mis vistas
+app.set("views", "views");                         //indico donde van a estar mis vistas
 app.set("view engine", "pug");                      //indico el motor de vistas
 
 //por defecto muestro los medicos
