@@ -1,21 +1,66 @@
-//NOTA para redimencionar las imagenes, se puede utilizar la api sharp nodejs
+//NOTA para redimencionar las imagenes, 
+//se puede utilizar la api sharp nodejs
 
-const express = require("express");                 // obligatorio para iniciar express
-const methodOverride = require("method-override");  // para sobreescribir metodos que me envian por post
-const mysql = require("mysql2");                    // para poder usar mysql2
-//datos de coneccion de la base de datos
-const cnx = mysql.createConnection({ host: "localhost", database: "practica", user: "root", password:"" });
-const upload = require("express-fileupload");       // se usa para poder subir archivos
-const uuid = require("uuid");                       // generador de id unicas
+/*************************************************  Librerias */
+//#region Express
+//obligatorio para iniciar express
+const express = require("express");
+//#endregion
+//#region MethodOverride
+//para sobreescribir metodos que me envian por post              
+const methodOverride = require("method-override");
+//#endregion
+//#region Mysql2
+// para poder usar mysql2
+const mysql = require("mysql2");
+const cnx = mysql.createConnection({ host: "localhost", database: "practica", user: "root", password:"1231233" });
+//#endregion
+//#region Express-FileUpload
+// se usa para poder subir archivos
+const upload = require("express-fileupload");
+//#endregion
+//#region UUID
+// generador de id unicas
+const uuid = require("uuid");
+//#endregion
+/**************************************************************/
 
-app = express();                                    //ejecuto express para que me devuelva el objeto app
-app.use(express.urlencoded());                      //urlencoded, toma todo lo que me envian por get, y lo mete a res.body
-app.use(methodOverride("_method"));                 //debo hacer un USE para que pueda sobreescribir el metodo
-app.use(upload({limits: {fileSize: 50 * 1024 * 1024}}));                                  //este middleware, agrega el objeto files al req, y solo acpeta archivos menores a 50mb
-app.use(express.static("./imagenes"));              //para poder acceder a las imagenes
-app.set("views", "views");                         //indico donde van a estar mis vistas
-app.set("view engine", "pug");                      //indico el motor de vistas
 
+//ejecuto express para que me devuelva el objeto app
+app = express();
+
+
+/**********************  Establezco configuraciones a express */
+//#region Configuracion de vistas
+//indico donde van a estar mis vistas
+app.set("views", "views");
+//indico el motor de vistas
+app.set("view engine", "pug");
+//#endregion
+/**************************************************************/
+
+
+/***************************************************************
+*********  Ejecuto todos los middlewares que ponen *************
+*********  las librerias requeridas en funcionamiento. *********
+****************************************************************
+*/
+//urlencoded, toma todo lo que me envian por get, y lo mete a res.body
+app.use(express.urlencoded());
+//debo hacer un USE para que pueda sobreescribir el metodo
+app.use(methodOverride("_method"));
+//este middleware, agrega el objeto files al req, y solo acpeta archivos menores a 50mb
+app.use(upload({limits: {fileSize: 50 * 1024 * 1024}}));
+//para poder acceder a las imagenes
+app.use(express.static("./imagenes"));
+/**************************************************************/
+
+
+
+/*##############################################################
+##########  Comienzan los "matches" de las url #################
+################################################################
+*/
 //por defecto muestro los medicos
 app.get("/medicos", function (req, res){
     const borrado = req.query.borrado ? req.query.borrado : "";
