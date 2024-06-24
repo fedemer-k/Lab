@@ -9,21 +9,21 @@ html
     body
         .container
             br
-            form.form(action="/medicos?_method=PUT" method="post")
+            form.form(action="/usuarios?_method=PUT" method="post")
                 .form-group
-                    input(type="hidden", name="id" value = medico.id)
+                    input(type="hidden", name="id" value = usuario.id)
                     label Nombre 
-                    input.form.form-control(type = "text" name = "nombre" value = medico.nombre)
+                    input.form.form-control(type = "text" name = "nombre" value = usuario.nombre)
                 .form-group 
                     label Especialidad 
                     select.form.form-control(name="especialidad")
                         each especialidad in especialidades 
-                            if especialidad.id == medico.especialidad
+                            if especialidad.id == usuario.especialidad
                                 option(value = especialidad.id selected) #{especialidad.descripcion} 
                             else 
                                 option(value = especialidad.id) #{especialidad.descripcion}
                 .form-group 
                     label edad 
-                    input.form.form-control(type="number" name="edad" value = medico.edad)
+                    input.form.form-control(type="number" name="edad" value = usuario.edad)
                 .form-group 
                     input.form-control.btn.btn-primary(type="submit" value="modificar")

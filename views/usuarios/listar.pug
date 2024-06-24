@@ -21,12 +21,12 @@ html
             } );
     body
         if borrado 
-            div.alert.alert-success #{borrado}
+            div.alert.alert-success #{borrado},
         br
         .container
             div(style="display:flex;justify-content:space-between")
                 h1 Gestion de Medicos
-                a(href="/medico/alta")
+                a(href="/usuario/alta")
                     botton.btn.btn-info Dar de alta
             br
             table#tabla
@@ -40,18 +40,18 @@ html
                         th 
                         th 
                 tbody
-                    each medico in medicos
+                    each usuario in usuarios
                         tr 
-                            td=medico.id
-                            td=medico.nombre
-                            td=medico.descripcion
-                            td=medico.edad
+                            td=usuario.id
+                            td=usuario.nombre
+                            td=usuario.descripcion
+                            td=usuario.edad
                             td
-                                img.img-fluid(style="max-height:200px;" src=medico.urlImagen alt=medico.urlImagen)
+                                img.img-fluid(style="max-height:200px;" src=usuario.urlImagen alt=usuario.urlImagen)
                             td 
-                                form(action=`medicos/${medico.id}?_method=DELETE` method="post")
+                                form(action=`usuario/${usuario.id}?_method=DELETE` method="post")
                                     input.btn.btn-danger(type="submit" value="BORRAR")
                             td
-                                form(action=`medico/editar/${medico.id}` method="get")
+                                form(action=`usuario/editar/${usuario.id}` method="get")
                                     input.btn.btn-primary(type="submit" value="Editar")
-                            
+                                    
