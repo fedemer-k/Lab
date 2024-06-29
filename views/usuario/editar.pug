@@ -1,0 +1,33 @@
+html 
+    head
+        link(
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" 
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
+            crossorigin="anonymous"
+        )
+    body
+        .container
+            br
+            form.form(action="/usuario?_method=PUT" method="post")
+                .form-group
+                    input(type="hidden", name="id" value = usuario.id)
+                    label Nombre 
+                    input.form.form-control(type = "text" name = "nombre" value = usuario.nombre)
+                .form-group 
+                    label Rol
+                    select.form.form-control(name="rol")
+                        each rol in roles 
+                            if rol.id == usuario.rol
+                                option(value = rol.id selected) #{rol.rol} 
+                            else 
+                                option(value = rol.id) #{rol.rol}
+                .form-group 
+                    label edad 
+                    input.form.form-control(type="number" name="edad" value = usuario.edad)
+                .form-group
+                    label foto
+                    br 
+                    img.img-fluid(style="max-height:200px;" src="../../" + usuario.urlimagen alt=usuario.urlimagen)
+                .form-group 
+                    input.form-control.btn.btn-primary(type="submit" value="modificar")
