@@ -16,10 +16,8 @@ const upload = require("express-fileupload");
 //#endregion
 /*############################################################*/
 
-
 //ejecuto express para que me devuelva el objeto app
 app = express();
-
 
 /**********************  Establezco configuraciones a express */
 //#region Configuracion de vistas
@@ -55,14 +53,12 @@ app.use(upload({limits: {fileSize: 50 * 1024 * 1024}}));
 /**************************************************************/
 
 
-
 /************************* Routes *****************************/
 //#region usuario
 const usuarioRoute = require('./routes/usuario.route');
 app.use('/usuario', usuarioRoute);
 //#endregion
 /**************************************************************/
-
 
 
 //error 404

@@ -1,3 +1,12 @@
+//#region Mysql2
+const mysql = require("mysql2");
+const cnx = mysql.createConnection({ host: "localhost", database: "SistemaUsuario", user: "root", password:"1231233" });
+//#endregion
+//#region UUID
+// generador de id unicas
+const uuid = require("uuid");
+//#endregion
+
 function getAllUsers(req, res){
     const borrado = {};
     req.query.borrado ? req.query.borrado : "";
@@ -42,7 +51,6 @@ function addUser(req, res){
     });
 }
 
-//y la id?
 function deleteUser(req, res){
     cnx.connect(function (){
         cnx.query(

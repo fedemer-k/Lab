@@ -29,39 +29,32 @@ Rutas:
 //express framework backend
 const express = require("express");
 //#endregion
-//#region Mysql2
-const mysql = require("mysql2");
-const cnx = mysql.createConnection({ host: "localhost", database: "SistemaUsuario", user: "root", password:"1231233" });
-//#endregion
-//#region UUID
-// generador de id unicas
-const uuid = require("uuid");
-//#endregion
 
+const usuarioController = require("../controllers/usuario.controller.js");
 const router = express.Router();
 
 //por defecto muestro los usuarios FUNCIONA!
-
+router.route("/").get(usuarioController.getAllUsers);
 
 //recibo el usuario a agreagar por post, y lo agrego a la db FUNCIONA!
 //luego redirecciono a medicos (GET), enviando el mensaje de agregado (GET)
-router.post("/", function (req, res){
+router.route("/").post(usuarioController.addUser);
 
 //recibo el usuario a eliminar por delete, (a traves de una chapuza) 
 //y lo elimino de la db NO ELIMINA LA IMAGEN pero FUNCIONA!
-router.delete("/:id", function (req, res){
+router.route("/:id").delete(usuarioController.deleteUser);
 
 //recibo un usuario por put (a traves de una chapuza) 
 //y lo actualizo en la db FUNCIONA!
-router.put("/", function (req, res){
+router.route("/").put(usuarioController.updateUser);
 
 //Busco al usuario, y muestro el formulario con los datos 
 //anteriores por defecto (necesito su id por parametro) FUNCIONA!
-router.get("/editar/:id", function (req, res){
+router.route("/editar/:id").get(usuarioController.showUpdateUser);
 
 //muestro formulario de alta, dicho formulario
 //apunta a /medicos via post FUNCIONA!
-router.get("/alta", function (req, res){
+router.route("/alta").get(usuarioController.showAddUser);
 
 
 module.exports = router;
