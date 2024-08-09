@@ -14,6 +14,10 @@ const methodOverride = require("method-override");
 // se usa para poder subir archivos
 const upload = require("express-fileupload");
 //#endregion
+//#region jsonwebtoken
+//Utilizado para crear y validar los web tokens
+const jwt = require("jsonwebtoken");
+//#endregion
 /*############################################################*/
 
 //ejecuto express para que me devuelva el objeto app
@@ -49,6 +53,10 @@ app.use(express.urlencoded());
 //#region Express-FileUpload
 //este middleware, agrega el objeto files al req, y solo acpeta archivos menores a 50mb
 app.use(upload({limits: {fileSize: 50 * 1024 * 1024}}));
+//#endregion
+//#region jsonwebtoken
+//establece un limite de 10mb al token
+app.use(express.json({limit:'10mb'}));
 //#endregion
 /**************************************************************/
 

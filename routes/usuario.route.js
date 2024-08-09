@@ -37,7 +37,7 @@ const router = express.Router();
 router.route("/").get(usuarioController.getAllUsers);
 
 //recibo el usuario a agreagar por post, y lo agrego a la db FUNCIONA!
-//luego redirecciono a medicos (GET), enviando el mensaje de agregado (GET)
+//luego redirecciono a usuario (GET), enviando el mensaje de agregado (GET)
 router.route("/").post(usuarioController.addUser);
 
 //recibo el usuario a eliminar por delete, (a traves de una chapuza) 
@@ -53,8 +53,16 @@ router.route("/").put(usuarioController.updateUser);
 router.route("/editar/:id").get(usuarioController.showUpdateUser);
 
 //muestro formulario de alta, dicho formulario
-//apunta a /medicos via post FUNCIONA!
+//apunta a /usuario via post FUNCIONA!
 router.route("/alta").get(usuarioController.showAddUser);
+
+//muestro logueo para el usuario
+//apunta a /usuario/login
+router.route("/login").get(usuarioController.showLoginUser);
+
+//Realizo las comprobaciones y logueo al usuario
+//apunta a /usuario/login
+router.route("/login").post(usuarioController.loginUser);
 
 
 module.exports = router;

@@ -1,0 +1,64 @@
+
+button#login-button.btn.btn-primary(type="button") Abrir sesión
+
+#login-modal.modal
+  .modal-dialog
+    .modal-content
+      form#login-form(action="/usuario/login" method="post" enctype="multipart/form-data")
+        .modal-header
+          h5.modal-title Iniciar Sesión
+          button.close(type="button", data-dismiss="modal", aria-label="Close")
+            span(aria-hidden="true") &times;
+        .modal-body
+          .form-group
+            label(for="email") Correo Electrónico
+            input.form-control(type="email", id="email", name="correo", required)
+          .form-group
+            label(for="password") Contraseña
+            input.form-control(type="password", id="password", name="password", required)
+        .modal-footer
+          input(type="hidden", id="url" name="url", value ="")
+          button.btn.btn-secondary(type="button", data-dismiss="modal") Cerrar
+          button.btn.btn-primary(type="submit") Iniciar Sesión
+
+script.
+  const loginButton = document.getElementById('login-button');
+  const hiddenUrl = document.getElementById('url');
+  hiddenUrl.value = window.location.href;
+  const loginModal = new bootstrap.Modal(document.getElementById('login-modal'));
+
+  loginButton.addEventListener('click', () => {
+    loginModal.show();
+  });
+
+  const loginForm = document.getElementById('login-form');
+  loginForm.addEventListener('submit', (event) => {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$\.%^&*-]).{8,}$/
+
+    if (!emailRegex.test(emailInput.value)) {
+      alert('Por favor, ingresa una dirección de correo electrónico válida.');
+      emailInput.focus();
+      event.preventDefault();
+    }else
+    if (!passwordRegex.test(passwordInput.value)) {
+      alert('La contraseña debe tener al menos 8 caracteres, contener minimo una mayuscula, una minuscula, un numero y un caracter especial.');
+      passwordInput.focus();
+      event.preventDefault();
+    }else{
+      loginModal.hide();
+      this.submit; //estaria super copado que el usuario no sea redirigido a otra pagina para verificar datos.
+    }
+  });
+
+  const closeButton = document.querySelector('.modal-header button.close');
+  closeButton.addEventListener('click', () => {
+    loginModal.hide(); // Cierra el modal cuando se hace clic en el botón "Cerrar"
+  });
+
+  const closeModalButton = document.querySelector('.modal-footer button[data-dismiss="modal"]');
+  closeModalButton.addEventListener('click', () => {
+    loginModal.hide(); // Cierra el modal cuando se hace clic en el botón "Cerrar" en el boton
+  });

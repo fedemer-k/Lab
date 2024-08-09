@@ -9,8 +9,14 @@ html
             br
             form.form(action="/usuario" method="post" enctype="multipart/form-data")
                 .form-group
-                    label Nombre 
+                    label Nombre (Nombre visible)
                     input.form.form-control(type = "text" name = "nombre")
+                .form-group
+                    label Correo Electronico
+                    input.form.form-control(type = "text" name = "correo")
+                .form-group
+                    label Contraseña
+                    input.form.form-control(type = "password" name = "password")
                 .form-group 
                     label Rol 
                     select.form.form-control(name="rol")
