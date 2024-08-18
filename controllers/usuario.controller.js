@@ -268,9 +268,16 @@ async function loginUser(req, res){
                             .sign(secret)
                         ;
 
+                        const cookiesConfig = {
+                            expires: new Date(Date.now()+'7d'*24*60*60*1000),
+                            httpOnly: true
+                        }
+
+                        res.cookie('jwt', jwt, cookiesConf);
+
                         //Sesion creada
                         console.log(`Bienvenido ${result[0].nombre} tu contraseña es "${result[0].password}", te redirijo a ${url} Este es tu token: ${jwt}`);
-                        res.redirect(url);
+                        return res.status(200).json({ jwt }).redirect(url);
                     }else{
                         console.log("ERROR: contraseña incorrecta.");
                     }
