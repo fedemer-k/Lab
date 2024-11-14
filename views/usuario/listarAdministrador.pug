@@ -35,7 +35,7 @@ html
         include ../partes/cabezera.pug
         .container
             div(style="display:flex;justify-content:space-between")
-                h1 Gestion de Usuarios
+                h1 Gestion de Administradores
             br
             table#tabla
                 thead
@@ -45,6 +45,7 @@ html
                         th DNI
                         th Correo
                         th Fecha ingreso
+                        th 
                         th
                 tbody
                     each usuario in usuarios
@@ -54,7 +55,10 @@ html
                             td=usuario.dni
                             td=usuario.correo
                             td=usuario.fecha_alta
+                            td 
+                                form(action=`administrador/baja/${usuario.id_usuario}?_method=DELETE` method="post")
+                                    input.btn.btn-danger(type="submit" value="Dar de baja")
                             td
-                                form(action=`usuario/editar/${usuario.id_usuario}` method="get")
+                                form(action=`editar/${usuario.id_usuario}` method="get")
                                     input.btn.btn-primary(type="submit" value="Editar")
                                     

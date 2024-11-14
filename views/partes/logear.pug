@@ -1,21 +1,21 @@
-
-button#login-button.btn.btn-primary(type="button") Abrir sesión
+//Crea un login modal oculto que se muestra en el evento onclick de login-button
+//Dicho formulario es enviado a usuario/login via POST.
 
 #login-modal.modal
   .modal-dialog
     .modal-content
       form#login-form(action="/usuario/login" method="post" enctype="multipart/form-data")
         .modal-header
-          h5.modal-title Iniciar Sesión
+          h5.modal-title(style="color: black;") Iniciar Sesión
           button.close(type="button", data-dismiss="modal", aria-label="Close")
             span(aria-hidden="true") &times;
         .modal-body
           .form-group
-            label(for="email") Correo Electrónico
+            label(for="email", style="color: black;") Correo Electrónico
             input.form-control(type="email", id="email", name="correo", required)
           .form-group
-            label(for="password") Contraseña
-            input.form-control(type="password", id="password", name="password", required)
+            label(for="password", style="color: black;") Contraseña
+            input.form-control(type="password", id="password", name="contrasena", required)
         .modal-footer
           input(type="hidden", id="url" name="url", value ="")
           button.btn.btn-secondary(type="button", data-dismiss="modal") Cerrar
@@ -36,7 +36,7 @@ script.
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-    const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$\.%^&*-]).{8,}$/
+    const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$\.%^&*-]).{8,}$/;
 
     if (!emailRegex.test(emailInput.value)) {
       alert('Por favor, ingresa una dirección de correo electrónico válida.');

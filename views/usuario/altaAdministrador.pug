@@ -34,8 +34,9 @@ html
     body
         include ../partes/cabezera.pug
         .container
-            div(style="display:flex;justify-content:space-between")
-                h1 Gestion de Usuarios
+            div(style="justify-content:space-between")
+                h1 Asignar usuario como administrador.
+                h5 Para crear un administrador primero debes crear un usuario, luego le podras asignar el cargo como administrador.
             br
             table#tabla
                 thead
@@ -45,7 +46,7 @@ html
                         th DNI
                         th Correo
                         th Fecha ingreso
-                        th
+                        th 
                 tbody
                     each usuario in usuarios
                         tr 
@@ -54,7 +55,7 @@ html
                             td=usuario.dni
                             td=usuario.correo
                             td=usuario.fecha_alta
-                            td
-                                form(action=`usuario/editar/${usuario.id_usuario}` method="get")
-                                    input.btn.btn-primary(type="submit" value="Editar")
+                            td 
+                                form(action=`alta/${usuario.id_usuario}` method="post")
+                                    input.btn.btn-danger(type="submit" value="ASIGNAR COMO ADMINISTRADOR")
                                     

@@ -14,11 +14,32 @@ const methodOverride = require("method-override");
 // se usa para poder subir archivos
 const upload = require("express-fileupload");
 //#endregion
-//#region jsonwebtoken
-//Utilizado para crear y validar los web tokens
-const jwt = require("jsonwebtoken");
+//#region cookie-parser
+//Parsea cookies, las firma y las deja en formato json
+const cookieParser = require('cookie-parser');
+//#endregion
+//#region dotenv
+//toma el archivo .env y carga todas las variables a process.env
+const dotenv = require('dotenv');
+//#endregion
+//#region onlyForDevelopment
+//Livereload and connect-livereload auto refresh after changes
+const livereload = require("livereload");
+const connectLivereload = require("connect-livereload");
+
+const liveReloadServer = livereload.createServer();
+liveReloadServer.server.once("connection", () => {
+  setTimeout(() => {
+    liveReloadServer.refresh("/");
+  }, 100);
+});
+//#endregion
+//#region isAuthenticatedUser
+//Revisa si hay una cookie y comprueba su jwt. Si todo es correcto guarda todo en req.user 
+const isAuthenticatedUser = require('./middleware/authMiddleware');
 //#endregion
 /*############################################################*/
+
 
 //ejecuto express para que me devuelva el objeto app
 app = express();
@@ -37,11 +58,14 @@ app.use(express.static("./imagenes"));
 /**************************************************************/
 
 
-
 /***************************************************************
 *********  Ejecuto todos los middlewares que ponen *************
 *********  las librerias requeridas en funcionamiento. *********
 ***************************************************************/
+//#region dotenv
+//carga todas las variables del .env al process.env
+dotenv.config();
+//#endregion
 //#region methodOverride
 //debo hacer un USE para que pueda sobreescribir el metodo
 app.use(methodOverride("_method"));
@@ -54,9 +78,17 @@ app.use(express.urlencoded());
 //este middleware, agrega el objeto files al req, y solo acpeta archivos menores a 50mb
 app.use(upload({limits: {fileSize: 50 * 1024 * 1024}}));
 //#endregion
-//#region jsonwebtoken
-//establece un limite de 10mb al token
-app.use(express.json({limit:'10mb'}));
+//#region cookie-parser
+//se ejecuta el middleware de cookie-parser
+app.use(cookieParser());
+//#endregion
+//#region onlyForDevelopment
+//connect middleware for adding the Livereload script to the response
+app.use(connectLivereload());
+//#endregion
+//#region isAuthenticatedUser
+// Aplicar el middleware de autenticación globalmente 
+app.use(isAuthenticatedUser);
 //#endregion
 /**************************************************************/
 
@@ -66,16 +98,17 @@ app.use(express.json({limit:'10mb'}));
 const usuarioRoute = require('./routes/usuario.route');
 app.use('/usuario', usuarioRoute);
 //#endregion
+//#region solicitud
+const solicitudRoute = require('./routes/solicitud.route');
+app.use('/solicitud', solicitudRoute);
+//#endregion
 /**************************************************************/
 
 
 //error 404
 app.get("*", function (req, res){
-    res.send("<h1>404</h1>");
+  return res.status(500).render("error", {user: req.user, error: `ERROR 404`});
 });
 
 //levanto el servidor
-app.listen(8000, function (req, res){ console.log("svr open"); });
-
-//NECESITO VER PROMESAS DE CONSULTAS
-//TAMBIEN VER CONSULTAS PREPARADAS
+app.listen(process.env.PORT, function (req, res){ console.log("svr open"); });

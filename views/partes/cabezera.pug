@@ -1,0 +1,31 @@
+header.p-3.bg-dark.text-white
+  .container
+    .d-flex.flex-wrap.align-items-center.justify-content-center.justify-content-lg-start
+      a.d-flex.align-items-center.mb-2.mb-lg-0.text-white.text-decoration-none(href='/')
+        svg.bi.me-2(width='40' height='32' role='img' aria-label='Bootstrap')
+          use(xlink:href='#bootstrap')
+      ul.nav.col-12.col-lg-auto.me-lg-auto.mb-2.justify-content-center.mb-md-0
+        li
+          a.nav-link.px-2.text-white(href='/solicitud') Solicitar turno
+          //- a.nav-link.px-2.text-secondary(href='#') Inicio
+        li
+          a.nav-link.px-2.text-white(href='#') Turnos solicitados
+        if user && user.administrador == 1
+          li
+            a.nav-link.px-2.text-white(href='/usuario/gestion') Gestion
+      .text-end
+      if user
+        a(href=`/usuario/editar/${user.id_usuario}`)
+          button#edit-button.btn.btn-outline-light.me-2(type='button') Mi cuenta (#{user.nombres})
+        a(href="/usuario/logout")
+          button.btn.btn-warning(type='button') Cerrar session 
+      else
+        button#login-button.btn.btn-outline-light.me-2(type='button') Ingresar
+        a(href="/usuario/alta")
+          button.btn.btn-warning(type='button') Registrarse
+      include logear.pug
+
+if exito
+    div.alert.alert-success #{exito}
+br
+      

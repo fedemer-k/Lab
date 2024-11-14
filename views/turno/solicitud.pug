@@ -1,0 +1,222 @@
+html 
+    head
+        link(rel="stylesheet", 
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+        )
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js")
+
+        script(src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js')
+        script.
+            //carga todos los turnos que no son validos
+            function loadNonValidTurns(allTurns, nonValidTurns){
+                nonValidTurns.forEach(function(nonValidTurn, index){
+                    let foundItem = allTurns.find(item => item.start === nonValidTurn);
+                    if (foundItem){
+                        foundItem.title = "TURNO NO VALIDO";
+                        foundItem.url = "";
+                        foundItem.color = "white";
+                        foundItem.display = "background"
+                    }
+                })
+            }
+
+            //carga todos los turnos ocupados al arreglo de turnos
+            function loadOccupiedTurns(allTurns, occupiedTurns){
+                allTurns.forEach(function(turno) {
+                    occupiedTurns.forEach(function(occupiedTurn) {
+                        if (turno.start === occupiedTurn.start) {
+                            turno.title = occupiedTurn.title;
+                            turno.url = occupiedTurn.url;
+                            turno.color = occupiedTurn.color;
+                        }
+                    });
+                });
+            }
+
+            //carga todos los turnos que restan de este mes, y de dos meses mas
+            function loadAllDaysTurns(allTurns){
+                // Fecha actual
+                let today = new Date(); 
+                let currentYear = today.getFullYear(); 
+                let currentMonth = today.getMonth(); 
+                let currentDay = today.getDate() + 1;
+                // Array para almacenar los días 
+                let daysArray = [];
+                // Recorrer el mes actual y los dos siguientes
+                for (let i = 0; i < 3; i++){
+                    let year = currentYear;
+                    let month = currentMonth + i;
+                    // Ajustar el año si el mes supera diciembre
+                    if(month > 11){
+                        month -= 12; year++;
+                    }
+                    // Obtener la cantidad de días en el mes actual
+                    let daysInMonth = new Date(year, month + 1, 0).getDate();
+                    // Determinar el día de inicio en el primer mes
+                    let startDay = (i === 0) ? currentDay : 1;
+                    // Agregar cada día del mes al array desde startDay
+                    for(let day = startDay; day <= daysInMonth; day++){
+                        let date = new Date(year, month, day);
+                        daysArray.push(date);
+                    }
+                }
+                // Imprimir los días 
+                daysArray.forEach(date =>{
+                    loadAllTurns(date, allTurns);
+                    // Formato YYYY-MM-DD
+                });
+            }
+
+            //Carga todos los turnos del dia ingresado (24 horas, 48 turnos)
+            function loadAllTurns(date, allTurns){
+                // Obtener el nombre del día de la semana (ej: "Lunes")
+                let daysOfWeek = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+                let dayName = daysOfWeek[date.getDay()];
+
+                //Obtiene el dia completo (ej: "31-01-2004")
+                let fullDay = date.toISOString().split('T')[0]
+
+                //Se utiliza como nombre de turno
+                let diaTitle = `del dia ${dayName} ${date.getDay()}/${date.getMonth()}`
+                for (let i = -1; i < 23; i++) {
+                    //Guardo la hora para mayor legibilidad
+                    let hora = (i+1).toString().padStart(2, '0');
+                    let horaSiguiente = (i+2).toString().padStart(2, '0');
+
+                    let primeraMediaHora = { 
+                        title: diaTitle, 
+                        url: `${fullDay}T${hora}:00:00`, 
+                        start: fullDay + "T" + hora + ":00:00", 
+                        end: fullDay + "T" + hora + ":30:00"
+                    };
+                    
+                    let segundaMediaHora = { 
+                        title: diaTitle,
+                        url: `${fullDay}T${hora}:30:00`, 
+                        start: fullDay + "T" + hora + ":30:00", 
+                        end: fullDay + "T" + horaSiguiente + ":00:00"
+                    };
+
+                    allTurns.push(primeraMediaHora);  
+                    allTurns.push(segundaMediaHora); 
+                }
+            }
+
+            //carga todos los turnos ocupados al arreglo de turnos
+            //tambien invalida todos los turnos donde el medico no trabaja
+            function loadWorkingBlocks(allTurns, workingBlocks) {
+                allTurns.forEach(function(turno) {
+                    let turnoDate = new Date(turno.start);
+                    let diaSemanaTurno = turnoDate.getDay();
+                    let horarioEncontrado = false;
+
+                    workingBlocks.forEach(function(workingBlock) {
+                        let blockDate = new Date(workingBlock.start);
+                        let diaSemanaBlock = blockDate.getDay();
+
+                        if (diaSemanaBlock === diaSemanaTurno && turnoDate.getHours() === blockDate.getHours() && turnoDate.getMinutes() === blockDate.getMinutes()) {
+                            turno.title = workingBlock.title;
+                            turno.url = workingBlock.url + turno.url;
+                            turno.color = workingBlock.color;
+                            horarioEncontrado = true;
+                        }
+                    });
+
+                    // Si no se encontró coincidencia, marcar el turno como no válido
+                    if (!horarioEncontrado) {
+                        turno.title = "TURNO NO VALIDO";
+                        turno.url = "";
+                        turno.color = "white";
+                        turno.display = "background";
+                    }
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                var calendarEl = document.getElementById('calendar');
+
+                //cargando todos los turnos de este mes y los dos siguientes
+                let allTurns = [];
+                loadAllDaysTurns(allTurns);
+
+                //cargando los bloques laborales de este medico
+                const workingBlocks = !{JSON.stringify(bloques_horarios)};
+                loadWorkingBlocks(allTurns, workingBlocks);
+
+                //cargando los turnos no validos (turnos en los que no se trabaja)
+                let nonValidTurns = [
+                    "2024-11-13T12:00:00",
+                    "2024-11-13T12:30:00",
+                    "2024-11-14T12:00:00",
+                    "2024-11-14T12:30:00",
+                    "2024-11-15T12:00:00",
+                    "2024-11-15T12:30:00",
+                ];
+                loadNonValidTurns(allTurns, nonValidTurns);
+
+                //cargando todos los turnos que ya estan tomados
+                const occupiedTurns = !{JSON.stringify(bloques_turnos)};
+                loadOccupiedTurns(allTurns, occupiedTurns);
+
+                console.log(allTurns);
+
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    timeZone: 'UTC',
+                    initialView: 'timeGridFourDay',
+                    headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'timeGridFourDay'
+                    },
+                    views: {
+                    timeGridFourDay: {
+                        type: 'timeGrid',
+                        duration: { days: 7 },
+                        buttonText: '7 day'
+                    }
+                    },
+                    locale: 'es',
+                    dateAlignment: "week",
+                    hiddenDays: [0,6],
+                    slotEventOverlap:false,
+                    events: allTurns,
+                    allDaySlot: false,
+                    slotMinTime: "06:00:00",
+                    slotMaxTime: "20:00:00",
+                    dayHeaderFormat: { weekday: 'long', month: 'numeric', day: 'numeric', omitCommas: true },
+                    eventColor: 'green',
+                    eventClick: function(info) { 
+                        info.jsEvent.preventDefault(); // prevenir la redirección inmediata 
+
+                        // Verificar si el evento tiene una URL válida
+                        if (!info.event.url) { 
+                            return;
+                        }
+
+                        // Ajustar la fecha a la zona horaria GMT
+                        const fecha = new Date(info.event.start);
+                        const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                        const opcionesHora = { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'GMT' }; // GMT
+
+                        const fechaFormateada = fecha.toLocaleDateString('es-AR', opcionesFecha);
+                        const horaFormateada = fecha.toLocaleTimeString('es-AR', opcionesHora);
+
+                        const mensajeConfirmacion = `¿Estás seguro de solicitar el turno del ${fechaFormateada} a las ${horaFormateada} GMT?`;
+
+                        if (confirm(mensajeConfirmacion)) { 
+                            window.location.href = info.event.url; 
+                        }
+                    }
+                });
+
+                calendar.render();
+
+            });
+    body
+        include ../partes/cabezera.pug
+        .container
+            div(style="justify-content:space-between")
+                h1 Solicitando turno medico
+                h4 con el doctor #{medico.nombres} #{medico.apellidos}
+            br
+        #calendar
