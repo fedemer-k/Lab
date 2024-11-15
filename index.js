@@ -22,18 +22,6 @@ const cookieParser = require('cookie-parser');
 //toma el archivo .env y carga todas las variables a process.env
 const dotenv = require('dotenv');
 //#endregion
-//#region onlyForDevelopment
-//Livereload and connect-livereload auto refresh after changes
-const livereload = require("livereload");
-const connectLivereload = require("connect-livereload");
-
-const liveReloadServer = livereload.createServer();
-liveReloadServer.server.once("connection", () => {
-  setTimeout(() => {
-    liveReloadServer.refresh("/");
-  }, 100);
-});
-//#endregion
 //#region isAuthenticatedUser
 //Revisa si hay una cookie y comprueba su jwt. Si todo es correcto guarda todo en req.user 
 const isAuthenticatedUser = require('./middleware/authMiddleware');
@@ -81,10 +69,6 @@ app.use(upload({limits: {fileSize: 50 * 1024 * 1024}}));
 //#region cookie-parser
 //se ejecuta el middleware de cookie-parser
 app.use(cookieParser());
-//#endregion
-//#region onlyForDevelopment
-//connect middleware for adding the Livereload script to the response
-app.use(connectLivereload());
 //#endregion
 //#region isAuthenticatedUser
 // Aplicar el middleware de autenticación globalmente 

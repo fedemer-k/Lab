@@ -1,6 +1,11 @@
 //#region Mysql2
 const mysql = require("mysql2/promise");
-const cnxConfig = { host: "localhost", database: "labiiac", user: "root", password:"1231233" };
+const cnxConfig = { 
+    host:     'bahncy9cfv5sc1wycsii-mysql.services.clever-cloud.com', 
+    database: 'bahncy9cfv5sc1wycsii', 
+    user:     'uppjvqpmklnvhjzu', 
+    password: 'xbKyu18VPzmF2fEnVFuc'
+};
 //#endregion
 //#region UUID
 // generador de id unicas
@@ -322,7 +327,7 @@ async function addAdmin(req, res){
             }
         }
     }catch(err){
-        return res.status(500).send("Error en la base de datos: " + err.message);
+        return res.status(500).render("error", {user: req.user, error: `ERROR EN LA BASE DE DATOS ${err}`});;
     }finally{
         if(connection){
             await connection.end();
@@ -363,7 +368,7 @@ async function deactivateAdmin(req, res){
             return res.status(404).send("El usuario no es administrador.");
         }
     }catch(err){
-        return res.status(500).send("Error en la base de datos: " + err.message);
+        return res.status(500).render("error", {user: req.user, error: `ERROR EN LA BASE DE DATOS ${err}`});;
     }finally{
         if(connection){
             await connection.end();
@@ -495,7 +500,7 @@ async function addMedic(req, res){
             }
         }
     }catch(err){
-        return res.status(500).send("Error en la base de datos: " + err.message);
+        return res.status(500).render("error", {user: req.user, error: `ERROR EN LA BASE DE DATOS ${err}`});;
     }finally{
         if(connection){
             await connection.end();
@@ -536,7 +541,87 @@ async function deactivateMedic(req, res) {
             return res.status(404).send("El usuario no es médico.");
         }
     }catch(err){
-        return res.status(500).send("Error en la base de datos: " + err.message);
+        return res.status(500).render("error", {user: req.user, error: `ERROR EN LA BASE DE DATOS ${err}`});;
+    }finally{
+        if(connection){
+            await connection.end();
+        }
+    }
+}
+
+//gestion de especialidades
+
+async function showEspecialties(req, res){
+    // Verificación de seguridad: Si no es administrador, no debería tener acceso
+    if(!req.user){
+        return res.status(403).render("error", {user: req.user, error: "Debes iniciar sesion para poder acceder aqui"});
+    }
+    if(req.user.administrador == 0){
+        return res.status(403).render("error", {user: req.user, error: "No tienes permiso para realizar esta acción"});
+    }
+
+    let connection;
+    try{
+        connection = await mysql.createConnection(cnxConfig); 
+        
+        // Obtengo las especialidades
+        const [especialidades] = await connection.execute(`
+            SELECT id_especialidad, nombre 
+            FROM especialidad`
+        );
+
+        return res.render("listarEspecialidad", {especialidades: especialidades});
+    }catch(err){
+        return res.status(500).render("error", {user: req.user, error: `ERROR EN LA BASE DE DATOS ${err}`});;
+    }finally{
+        if(connection){
+            await connection.end();
+        }
+    }
+}
+
+async function addEspecialties(req, res){
+    // Verificación de seguridad: Si no es administrador, no debería tener acceso
+    if(!req.user){
+        return res.status(403).render("error", {user: req.user, error: "Debes iniciar sesion para poder acceder aqui"});
+    }
+    if(req.user.administrador == 0){
+        return res.status(403).render("error", {user: req.user, error: "No tienes permiso para realizar esta acción"});
+    }
+
+    const {nombre} = req.body;
+    
+    let connection;
+    try{
+        connection = await mysql.createConnection(cnxConfig); 
+        
+        // Busco si la especialidad ya existe
+        const [especialidad] = await connection.execute(`
+            SELECT id_especialidad, nombre 
+            FROM especialidad
+            WHERE nombre = ?`,
+            [nombre]
+        );
+
+        //especialidad encontrada, no se puede volver a agregar
+        if(especialidad.length === 1){
+            return res.status(404).render("error", {user: req.user, error: "Esta especialidad fue cargada antes"});
+        }
+
+        // cargo la especialidad a la base de datos
+        const [result] = await connection.execute(
+            "INSERT INTO especialidad (nombre) VALUES (?)", 
+            [nombre]
+        );
+
+        if(result.affectedRows == 1){
+            return res.redirect("/gestion?exito=La especialidad fue cargada a la base de datos con exito");
+        }else{
+            return res.status(500).render("error", {user: req.user, error: `No se puedo agregar especialidad.`});
+        }
+        
+    }catch(err){
+        return res.status(500).render("error", {user: req.user, error: `ERROR EN LA BASE DE DATOS ${err}`});;
     }finally{
         if(connection){
             await connection.end();
@@ -638,5 +723,7 @@ module.exports = {
     addMedic,
     deactivateMedic,
     loginUser,
-    logoutUser
+    logoutUser,
+    showEspecialties,
+    addEspecialties
 };

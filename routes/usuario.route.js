@@ -96,6 +96,12 @@ router.route("/medico/alta/:id_usuario").post(usuarioController.addMedic);
 //luego redirecciono a usuario/alta/medico (GET), enviando el mensaje de desactivado (GET)
 router.route("/medico/baja/:id_usuario").delete(usuarioController.deactivateMedic);
 
+//muestro las especialidades que hay
+router.route("/especialidad").get(usuarioController.showEspecialties);
+
+//recibo una especialidad por post y la agrego
+router.route("/especialidad").post(usuarioController.addEspecialties);
+
 //Realizo las comprobaciones y logueo al usuario
 //apunta a /usuario/login
 router.route("/login").post(usuarioController.loginUser);

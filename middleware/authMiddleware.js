@@ -1,6 +1,11 @@
 const mysql = require('mysql2/promise'); 
 const jose = require('jose'); 
-const cnxConfig = { host: "localhost", database: "labiiac", user: "root", password:"1231233" };
+const cnxConfig = { 
+    host:     'bahncy9cfv5sc1wycsii-mysql.services.clever-cloud.com', 
+    database: 'bahncy9cfv5sc1wycsii', 
+    user:     'uppjvqpmklnvhjzu', 
+    password: 'xbKyu18VPzmF2fEnVFuc'
+};
 
 async function isAuthenticatedUser(req, res, next){ //VER 5.0 
     const { jwt } = req.cookies;
