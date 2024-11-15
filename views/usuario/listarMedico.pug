@@ -61,4 +61,7 @@ html
                             td
                                 form(action=`editar/${usuario.id_usuario}` method="get")
                                     input.btn.btn-primary(type="submit" value="Editar")
+                            td
+                                form(action=`/solicitud/rango/${usuario.id_medico}` method="get")
+                                    input.btn.btn-primary(type="submit" value="Modificar rango horario")
                                     

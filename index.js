@@ -26,6 +26,15 @@ const dotenv = require('dotenv');
 //Revisa si hay una cookie y comprueba su jwt. Si todo es correcto guarda todo en req.user 
 const isAuthenticatedUser = require('./middleware/authMiddleware');
 //#endregion
+//#region Mysql2
+const mysql = require("mysql2/promise");
+const cnxConfig = { 
+  host:     'bahncy9cfv5sc1wycsii-mysql.services.clever-cloud.com', 
+  database: 'bahncy9cfv5sc1wycsii', 
+  user:     'uppjvqpmklnvhjzu', 
+  password: 'xbKyu18VPzmF2fEnVFuc'
+};
+//#endregion
 /*############################################################*/
 
 
@@ -87,6 +96,12 @@ const solicitudRoute = require('./routes/solicitud.route');
 app.use('/solicitud', solicitudRoute);
 //#endregion
 /**************************************************************/
+
+
+//
+app.get("/", function (req, res){
+  return res.status(500).render("error", {user: req.user, error: `ERROR 404`});
+});
 
 
 //error 404

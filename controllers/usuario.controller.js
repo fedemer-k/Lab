@@ -6,6 +6,12 @@ const cnxConfig = {
     user:     'uppjvqpmklnvhjzu', 
     password: 'xbKyu18VPzmF2fEnVFuc'
 };
+// const cnxConfig = { 
+//     host:     'localhost', 
+//     database: 'labiiac', 
+//     user:     'root', 
+//     password: '1231233'
+// };
 //#endregion
 //#region UUID
 // generador de id unicas
@@ -29,8 +35,10 @@ async function getGestion(req, res){ //VER 5.0 FALTA AGREGAR GESTION ESPECIALIDA
     if(req.user.administrador == 0){
         return res.status(403).render("error", {user: req.user, error: "No tienes permiso para realizar esta acción"});
     }
+
+    const exito = req.query.exito ? req.query.exito : "";
     
-    return res.render("usuario/seleccionarTipo", { user: req.user});
+    return res.render("usuario/seleccionarTipo", { user: req.user, exito:exito});
 }
 
 //gestion de usuarios
@@ -391,7 +399,7 @@ async function getAllMedic(req, res){ //VER 5.0
 
     //query para listar todos los medicos
     query = ` 
-        SELECT u.id_usuario, u.nombres, u.dni, u.correo, u.fecha_alta 
+        SELECT u.id_usuario, m.id_medico, u.nombres, u.dni, u.correo, u.fecha_alta 
         FROM usuario u 
         JOIN medico m 
         ON u.id_usuario = m.id_usuario
@@ -566,11 +574,11 @@ async function showEspecialties(req, res){
         
         // Obtengo las especialidades
         const [especialidades] = await connection.execute(`
-            SELECT id_especialidad, nombre 
+            SELECT id_especialidad, nombre_especialidad
             FROM especialidad`
         );
 
-        return res.render("listarEspecialidad", {especialidades: especialidades});
+        return res.render("usuario/listarEspecialidad", {user: req.user, especialidades: especialidades});
     }catch(err){
         return res.status(500).render("error", {user: req.user, error: `ERROR EN LA BASE DE DATOS ${err}`});;
     }finally{
@@ -578,6 +586,18 @@ async function showEspecialties(req, res){
             await connection.end();
         }
     }
+}
+
+async function showAddEspecialties(req, res){
+    // Verificación de seguridad: Si no es administrador, no debería tener acceso
+    if(!req.user){
+        return res.status(403).render("error", {user: req.user, error: "Debes iniciar sesion para poder acceder aqui"});
+    }
+    if(req.user.administrador == 0){
+        return res.status(403).render("error", {user: req.user, error: "No tienes permiso para realizar esta acción"});
+    }
+
+    return res.render("usuario/altaEspecialidad", {user: req.user});
 }
 
 async function addEspecialties(req, res){
@@ -589,7 +609,7 @@ async function addEspecialties(req, res){
         return res.status(403).render("error", {user: req.user, error: "No tienes permiso para realizar esta acción"});
     }
 
-    const {nombre} = req.body;
+    const {nombre_especialidad} = req.body;
     
     let connection;
     try{
@@ -597,10 +617,10 @@ async function addEspecialties(req, res){
         
         // Busco si la especialidad ya existe
         const [especialidad] = await connection.execute(`
-            SELECT id_especialidad, nombre 
+            SELECT id_especialidad, nombre_especialidad 
             FROM especialidad
-            WHERE nombre = ?`,
-            [nombre]
+            WHERE nombre_especialidad = ?`,
+            [nombre_especialidad]
         );
 
         //especialidad encontrada, no se puede volver a agregar
@@ -610,14 +630,90 @@ async function addEspecialties(req, res){
 
         // cargo la especialidad a la base de datos
         const [result] = await connection.execute(
-            "INSERT INTO especialidad (nombre) VALUES (?)", 
-            [nombre]
+            "INSERT INTO especialidad (nombre_especialidad) VALUES (?)", 
+            [nombre_especialidad]
         );
 
         if(result.affectedRows == 1){
-            return res.redirect("/gestion?exito=La especialidad fue cargada a la base de datos con exito");
+            return res.redirect("/usuario/gestion?exito=La especialidad fue cargada a la base de datos con exito");
         }else{
             return res.status(500).render("error", {user: req.user, error: `No se puedo agregar especialidad.`});
+        }
+        
+    }catch(err){
+        return res.status(500).render("error", {user: req.user, error: `ERROR EN LA BASE DE DATOS ${err}`});;
+    }finally{
+        if(connection){
+            await connection.end();
+        }
+    }
+}
+
+async function putEspecialties(req, res){
+    // Verificación de seguridad: Si no es administrador, no debería tener acceso
+    if(!req.user){
+        return res.status(403).render("error", {user: req.user, error: "Debes iniciar sesion para poder acceder aqui"});
+    }
+    if(req.user.administrador == 0){
+        return res.status(403).render("error", {user: req.user, error: "No tienes permiso para realizar esta acción"});
+    }
+
+    const {id_especialidad, nombre_especialidad} = req.body;
+    
+    let connection;
+    try{
+        connection = await mysql.createConnection(cnxConfig); 
+
+        // cargo la especialidad a la base de datos
+        const [result] = await connection.execute(
+            "UPDATE especialidad SET nombre_especialidad = ? WHERE id_especialidad = ?", 
+            [nombre_especialidad, id_especialidad]
+        );
+        
+        if(result.affectedRows == 1){
+            return res.redirect("/usuario/gestion?exito=La especialidad fue modificada en la base de datos con exito");
+        }else{
+            return res.status(500).render("error", {user: req.user, error: `No se puedo agregar especialidad.`});
+        }
+        
+    }catch(err){
+        return res.status(500).render("error", {user: req.user, error: `ERROR EN LA BASE DE DATOS ${err}`});;
+    }finally{
+        if(connection){
+            await connection.end();
+        }
+    }
+
+}
+
+async function showPutEspecialties(req, res){
+    // Verificación de seguridad: Si no es administrador, no debería tener acceso
+    if(!req.user){
+        return res.status(403).render("error", {user: req.user, error: "Debes iniciar sesion para poder acceder aqui"});
+    }
+    if(req.user.administrador == 0){
+        return res.status(403).render("error", {user: req.user, error: "No tienes permiso para realizar esta acción"});
+    }
+
+    const {id_especialidad} = req.body;
+    
+    let connection;
+    try{
+        connection = await mysql.createConnection(cnxConfig); 
+        
+        // Busco si la especialidad
+        const [especialidad] = await connection.execute(`
+            SELECT id_especialidad, nombre_especialidad 
+            FROM especialidad
+            WHERE id_especialidad = ?`,
+            [id_especialidad]
+        );
+
+        //especialidad no encontrada, no se puede modificar
+        if(especialidad.length === 0){
+            return res.status(404).render("error", {user: req.user, error: "Esta especialidad no existe"});
+        }else{
+            return res.render("usuario/editarEspecialidad", {user: req.user, especialidad: especialidad[0]});
         }
         
     }catch(err){
@@ -725,5 +821,8 @@ module.exports = {
     loginUser,
     logoutUser,
     showEspecialties,
-    addEspecialties
+    showAddEspecialties,
+    addEspecialties,
+    showPutEspecialties,
+    putEspecialties
 };

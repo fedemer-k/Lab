@@ -35,8 +35,9 @@ html
                     each especialidad in especialidades
                         tr 
                             td=especialidad.id_especialidad
-                            td=especialidad.nombre
+                            td=especialidad.nombre_especialidad
                             td
-                                form(action=`/especialidad/${especialidad.id_especialidad}` method="get")
-                                    input.btn.btn-primary(type="submit" value="Editar")
+                                form(action="/usuario/especialidad/alta" method="POST") 
+                                    input(type="hidden" name="id_especialidad" value=`${especialidad.id_especialidad}`)
+                                    button.btn.btn-primary(type="submit") Editar especialidad
                                     

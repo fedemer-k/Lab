@@ -14,12 +14,12 @@ html
         include ../partes/cabezera.pug
         .container
             div(style="display:flex;justify-content:space-between")
-                h1 Alta de especialidad
+                h1 Modificacion de especialidad
             br
-            form.form(action="/usuario/especialidad" method="post" enctype="multipart/form-data")
+            form.form(action="/usuario/especialidad?_method=PUT" method="post" enctype="multipart/form-data")
                 .form-group
-                .form-group
+                    input(type="hidden", name="id_especialidad" value = especialidad.id_especialidad )
                     label Nombre
-                    input.form.form-control(type = "text" name = "nombre_especialidad")
+                    input.form.form-control(type = "text" name = "nombre_especialidad" value = especialidad.nombre_especialidad)
                 .form-group 
-                    input.form-control.btn.btn-primary(type="submit" value="alta")
+                    input.form-control.btn.btn-primary(type="submit" value="modificar")

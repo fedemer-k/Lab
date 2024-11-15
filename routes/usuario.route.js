@@ -99,8 +99,17 @@ router.route("/medico/baja/:id_usuario").delete(usuarioController.deactivateMedi
 //muestro las especialidades que hay
 router.route("/especialidad").get(usuarioController.showEspecialties);
 
+//muestro formulario para crear especialidad
+router.route("/especialidad/alta").get(usuarioController.showAddEspecialties);
+
+//muestro formulario para modificar especialidad
+router.route("/especialidad/alta").post(usuarioController.showPutEspecialties);
+
 //recibo una especialidad por post y la agrego
 router.route("/especialidad").post(usuarioController.addEspecialties);
+
+//recibo una especialidad por put, y la modifico
+router.route("/especialidad").put(usuarioController.putEspecialties);
 
 //Realizo las comprobaciones y logueo al usuario
 //apunta a /usuario/login
