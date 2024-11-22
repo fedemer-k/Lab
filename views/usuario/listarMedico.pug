@@ -17,19 +17,7 @@ html
         )
         script(defer).
             $(document).ready( function () {
-                $('#tabla').DataTable({ 
-                    columnDefs: [{
-                        targets: 4,
-                        render: function(data, type, row) { 
-                            if (data) { 
-                                let date = new Date(data);
-                                let options = { year: 'numeric', month: 'short', day: '2-digit' };
-                                return date.toLocaleDateString('es-AR', options);
-                            } 
-                            return data; 
-                        }
-                    }]
-                });
+                $('#tabla').DataTable();
             });
     body
         include ../partes/cabezera.pug
@@ -44,7 +32,7 @@ html
                         th Nombres
                         th DNI
                         th Correo
-                        th Fecha ingreso
+                        th 
                         th 
                         th
                 tbody
@@ -54,14 +42,16 @@ html
                             td=usuario.nombres
                             td=usuario.dni
                             td=usuario.correo
-                            td=usuario.fecha_alta
-                            td 
-                                form(action=`medico/baja/${usuario.id_usuario}?_method=DELETE` method="post")
-                                    input.btn.btn-danger(type="submit" value="Dar de baja")
+                            td
+                                form(action=`/usuario/medico/matricula/${usuario.id_medico}` method="get")
+                                    input.btn.btn-primary(type="submit" value="Gestionar\nmatriculas")
+                            td
+                                form(action=`/solicitud/rango/${usuario.id_medico}` method="get")
+                                    input.btn.btn-primary(type="submit" value="Modificar\nrango horario")
                             td
                                 form(action=`editar/${usuario.id_usuario}` method="get")
                                     input.btn.btn-primary(type="submit" value="Editar")
-                            td
-                                form(action=`/solicitud/rango/${usuario.id_medico}` method="get")
-                                    input.btn.btn-primary(type="submit" value="Modificar rango horario")
+                            td 
+                                form(action=`medico/baja/${usuario.id_usuario}?_method=DELETE` method="post")
+                                    input.btn.btn-danger(type="submit" value="Dar de baja")
                                     

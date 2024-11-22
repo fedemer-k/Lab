@@ -12,21 +12,36 @@ Route de usuario:
   - admin -> ABM permisos (Naaah seria muy denso)
     
 Rutas:
-    # /gestion                        POST    (Muestra una botonera para acceder a toda la gestion de todo)
-    A /usuario                        POST    (Muestra usuarios, admins o medicos segun el post)
-    M /usuario                        PUT     (actualiza usuario)
-    # /usuario                        GET     (renderiza los tres botones de tipo de usuario)
-    # /usuario/alta                   GET     (renderiza formulario de alta)
-    # /usuario/alta                   POST    (Alta de usuario)
-    # /usuario/alta/administrador     GET     (renderiza formulario de alta)
-    # /usuario/alta/administrador/id  POST    (Alta de administrador)
-    # /usuario/alta/administrador/id  DELETE  (Desactivacion de administrador)
-    # /usuario/alta/medico            GET     (renderiza formulario de alta)
-    # /usuario/alta/medico/id         POST    (Alta de medico)
-    # /usuario/alta/medico/id         DELETE  (Desactivacion de medico)
-    # /usuario/editar/id              GET     (renderiza formulario de modificacion)
-    # /usuario/login                  POST    (Crea un jwt y lo guarda en cookie)
-    # /usuario/logout                 GET     (Destruye la cookie)
+    # /gestion                                               POST    (Muestra una botonera para acceder a toda la gestion de todo)
+    A /                                                      POST    (Muestra usuarios, admins o medicos segun el post)
+    M /                                                      PUT     (actualiza usuario)
+    # /                                                      GET     (renderiza los tres botones de tipo de usuario)
+    # /alta                                                  GET     (renderiza formulario de alta)
+    # /alta                                                  POST    (Alta de usuario)
+    # /editar/:id_usuario                                    GET     (renderiza formulario de modificacion)
+    # /login                                                 POST    (Crea un jwt y lo guarda en cookie)
+    # /logout                                                GET     (Destruye la cookie)
+
+    # /alta/administrador                                    GET     (renderiza formulario de alta)
+    # /alta/administrador/:id_usuario                        POST    (Alta de administrador)
+    # /alta/administrador/:id_usuario                        DELETE  (Desactivacion de administrador)
+
+    # /alta/medico                                           GET     (renderiza formulario de alta)
+    # /alta/medico/:id_usuario                               POST    (Alta de medico)
+    # /alta/medico/:id_usuario                               DELETE  (Desactivacion de medico)
+
+    # /especialidad                                          GET     (Lista las especialidades existentes en db)
+    # /especialidad                                          POST    (Recibe y procesesa datos para crear especialidad)
+    # /especialidad/alta                                     GET     (Renderiza formulario para crear especialidad)
+    # /especialidad/alta                                     POST    (Renderiza formulario para modificar especialidad recibida)
+    # /especialidad                                          PUT     (Recibe y procesesa datos para modificar la especialidad)
+
+    # /medico/matricula/:id_medico                           GET     (Muestra todas las especialidades/matriculas de dicho medico)
+    # /medico/matricula/alta/:id_medico                      GET     (Formulario para asignar una especialidad y matricula al medico)
+    # /medico/matricula/alta/:id_medico                      POST    (Recibe y procesesa datos para asignar una especialidad y matricula al medico)
+    # /medico/matricula/editar/:id_medico/:id_matricula      GET     (Formulario para modificar una matricula al medico)
+    # /medico/matricula/editar/:id_medico/:id_matricula      POST    (Recibe y procesesa datos para modificar y matricula al medico)
+    # /medico/matricula/editar/:id_medico/:id_matricula      DELETE  (Desactivacion/Activacion de matricula para dicho medico)
 
     know bugs:
         # no se borran las imagenes cuando se borra un usuario
@@ -96,20 +111,20 @@ router.route("/medico/alta/:id_usuario").post(usuarioController.addMedic);
 //luego redirecciono a usuario/alta/medico (GET), enviando el mensaje de desactivado (GET)
 router.route("/medico/baja/:id_usuario").delete(usuarioController.deactivateMedic);
 
-//muestro las especialidades que hay
-router.route("/especialidad").get(usuarioController.showEspecialties);
+//Lista las especialidades existentes en db
+router.route("/especialidad").get(usuarioController.showSpecialties);
 
-//muestro formulario para crear especialidad
-router.route("/especialidad/alta").get(usuarioController.showAddEspecialties);
+//Renderiza formulario para crear especialidad
+router.route("/especialidad/alta").get(usuarioController.showAddSpecialties);
 
-//muestro formulario para modificar especialidad
-router.route("/especialidad/alta").post(usuarioController.showPutEspecialties);
+//Renderiza formulario para modificar especialidad recibida
+router.route("/especialidad/alta").post(usuarioController.showPutSpecialties);
 
 //recibo una especialidad por post y la agrego
-router.route("/especialidad").post(usuarioController.addEspecialties);
+router.route("/especialidad").post(usuarioController.addSpecialties);
 
 //recibo una especialidad por put, y la modifico
-router.route("/especialidad").put(usuarioController.putEspecialties);
+router.route("/especialidad").put(usuarioController.putSpecialties);
 
 //Realizo las comprobaciones y logueo al usuario
 //apunta a /usuario/login
@@ -119,5 +134,28 @@ router.route("/login").post(usuarioController.loginUser);
 //apunta a /usuario/logout
 router.route("/logout").get(usuarioController.logoutUser);
 
+//Muestra todas las especialidades/matriculas de dicho medico
+//apunta a medico/matricula/:id_medico
+router.route("/medico/matricula/:id_medico").get(usuarioController.getAllSpecialties);
+
+//Formulario para asignar una especialidad y matricula al medico
+//apunta a medico/matricula/alta/:id_medico
+router.route("/medico/matricula/alta/:id_medico").get(usuarioController.showAddSpecialtyToMedic);
+
+//Recibe y procesesa datos para asignar una especialidad y matricula al medico
+//apunta a usuario/medico/matricula/alta/:id_medico
+router.route("/medico/matricula/alta/:id_medico").post(usuarioController.addSpecialtyToMedic);
+
+//Formulario para modificar una matricula al medico
+//apunta a /medico/matricula/editar/:id_medico/:id_matricula
+router.route("/medico/matricula/editar/:id_medico/:id_matricula").get(usuarioController.showPutLicense);
+
+//Desactivacion/Activacion de matricula para dicho medico
+//apunta a /medico/matricula/editar/:id_medico/:id_matricula
+router.route("/medico/matricula/editar/:id_medico/:id_matricula").post(usuarioController.putLicense);
+
+//Desactivacion/Activacion de matricula para dicho medico
+//apunta a /medico/matricula/editar/:id_medico/:id_matricula
+router.route("/medico/matricula/editar/:id_medico/:id_matricula").delete(usuarioController.alternateLicense);
 
 module.exports = router;

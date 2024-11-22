@@ -1,0 +1,70 @@
+html
+    head
+        link(rel="stylesheet", 
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+        )
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js")
+
+        link(rel="stylesheet" 
+            href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css"
+        )
+        script(src="https://code.jquery.com/jquery-3.6.1.min.js"
+            integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+            crossorigin="anonymous"
+        )
+        script(src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js" 
+            defer
+        )
+        script(defer).
+            $(document).ready( function () {
+                $('#tabla').DataTable({ 
+                    columnDefs: [{
+                        targets: 4,
+                        render: function(data, type, row) { 
+                            if (data) { 
+                                let date = new Date(data);
+                                let options = { year: 'numeric', month: 'short', day: '2-digit' };
+                                return date.toLocaleDateString('es-AR', options);
+                            } 
+                            return data; 
+                        }
+                    }]
+                });
+            });
+    body
+        include ../partes/cabezera.pug
+        .container
+            div(style="justify-content:space-between")
+                h1 Gestion de Matriculas
+                h4 Medico: #{medico.nombres} #{medico.apellidos} (#{medico.dni})
+                br
+                a(href=`/usuario/medico/matricula/alta/${medico.id_medico}`) 
+                    button.btn.btn-warning.mb-3(type='button') Agregar nueva matricula
+            br
+            table#tabla
+                thead
+                    tr 
+                        th Especialidad
+                        th Matricula
+                        th Vencimiento
+                        th Estado
+                        th
+                tbody
+                    each matricula in matriculas
+                        tr 
+                            td=matricula.nombre_especialidad
+                            td=matricula.matricula
+                            td=matricula.fecha_vencimiento
+                            if matricula.activo
+                                td="Activa" 
+                            else
+                                td="Inactiva"
+                            td
+                                form(action=`/usuario/medico/matricula/editar/${medico.id_medico}/${matricula.id_matricula}` method="get")
+                                    input.btn.btn-primary(type="submit" value="Editar")
+                            td
+                                form(action=`/usuario/medico/matricula/editar/${medico.id_medico}/${matricula.id_matricula}?_method=DELETE` method="post")
+                                    if matricula.activo
+                                        input.btn.btn-danger(type="submit" value="Desactivar")
+                                    else
+                                        input.btn.btn-success(type="submit" value="Activar")

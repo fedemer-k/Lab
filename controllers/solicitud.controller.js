@@ -215,20 +215,44 @@ async function addRequest(req, res){
             await connection.end();
         }
     }
-    //Tengo que crear el ABM de especialidades
 
-    //Tengo que crear el ABM de matriculas.
+    //La vista principal
+        //para los usuarios y no usuarios deben ver las especialidades/medicos disponibles
     
     //Para cambiar eso se tiene que obtener otra vista que seria "Aprobar Solicitudes"
-        //Esta vista solo cambiara el valor de nulo a true,
-        //y false si esta denegada.
-    
+        //Esta vista solo cambiara el valor de reservado a otro.
+
     //Por ultimo se tiene la vista "Ver turnos"
         //esta vista la pueden ver los medicos (solo sus turnos)
         //Tambien sera visible por los administradores (todos los turnos)
 
-    //Finalmente un medico puede llenar el formulario de consulta realizada.
-        //Esto sirve para historial medico, el cual solo es visible por un medico.
+    //Implementacion de feriados.
+
+    //Implementacion de excepciones de horario. (vacaciones, x problemas)
+
+    //VERSION 0.9 FUNCIONAL EN UNA CLINICA
+    
+    //Retocar el singup, para que el usuario pueda meter una foto de dni.
+
+    //Modificar la agenda de un medico para que se pueda limitar en rango de dias.
+    //Puede tener mas de una agenda, ya que pueden ser de diferentes dias,
+        //y ensima con diferentes horarios.
+
+    //VERSION 1.0 FUNCIONAL EN UNA CLINICA COMPLETO
+
+    //Intentar entender y planificar el uso de multiples clinicas.
+        //Alta, modificacion y desactivacion de clinica.
+        //Asignacion de medicos y administradores a una clinica
+        //Retocar las solicitudes/turnos para que pertenezcan a una clinica.
+
+    
+    //Hay que meter filtros del demonio
+
+    //VERSION 1.8
+
+    //Que se pueda pasar un turno de una clinica a otra (a otro medico)
+
+    //VERSION 2.0 RETAIL
 
 }
 

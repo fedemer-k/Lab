@@ -35,6 +35,17 @@ const cnxConfig = {
   password: 'xbKyu18VPzmF2fEnVFuc'
 };
 //#endregion
+//#region onlyForDevelopment
+//Livereload and connect-livereload auto refresh after changes
+const livereload = require("livereload");
+const connectLivereload = require("connect-livereload");
+const liveReloadServer = livereload.createServer();
+liveReloadServer.server.once("connection", () => {
+  setTimeout(() => {
+    liveReloadServer.refresh("/");
+  }, 100);
+});
+//#endregion
 /*############################################################*/
 
 
@@ -78,6 +89,10 @@ app.use(upload({limits: {fileSize: 50 * 1024 * 1024}}));
 //#region cookie-parser
 //se ejecuta el middleware de cookie-parser
 app.use(cookieParser());
+//#endregion
+//#region onlyForDevelopment
+//connect middleware for adding the Livereload script to the response
+app.use(connectLivereload());
 //#endregion
 //#region isAuthenticatedUser
 // Aplicar el middleware de autenticación globalmente 
