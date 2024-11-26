@@ -38,14 +38,23 @@ const cnxConfig = {
 //#endregion
 //#region onlyForDevelopment
 //Livereload and connect-livereload auto refresh after changes
-const livereload = require("livereload");
-const connectLivereload = require("connect-livereload");
-const liveReloadServer = livereload.createServer();
-liveReloadServer.server.once("connection", () => {
-	setTimeout(() => {
-		liveReloadServer.refresh("/");
-	}, 100);
-});
+let livereload
+let connectLivereload
+let liveReloadServer
+if(process.env.DEVELOPER_MODE == 1){
+    livereload = require("livereload");
+    connectLivereload = require("connect-livereload");
+    liveReloadServer = livereload.createServer();
+    liveReloadServer.server.once("connection", () => {
+        setTimeout(() => {
+            liveReloadServer.refresh("/");
+        }, 100);
+    });
+    console.log("DEVELOPER MODE ON");
+}else{
+    console.log("DEVELOPER MODE OFF");
+}
+console.log(process.env.DEVELOPER_MODE)
 //#endregion
 /*############################################################*/
 
@@ -89,7 +98,12 @@ app.use(cookieParser());
 //#endregion
 //#region onlyForDevelopment
 //connect middleware for adding the Livereload script to the response
-app.use(connectLivereload());
+if(process.env.DEVELOPER_MODE == 1){
+    app.use(connectLivereload());
+    console.log("DEVELOPER MODE ON");
+}else{
+    console.log("DEVELOPER MODE OFF");
+}
 //#endregion
 //#region isAuthenticatedUser
 // Aplicar el middleware de autenticación globalmente 
