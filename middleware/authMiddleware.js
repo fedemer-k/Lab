@@ -1,11 +1,16 @@
-const mysql = require('mysql2/promise'); 
-const jose = require('jose'); 
+//#region Mysql2
+const mysql = require("mysql2/promise");
 const cnxConfig = { 
-    host:     'bahncy9cfv5sc1wycsii-mysql.services.clever-cloud.com', 
-    database: 'bahncy9cfv5sc1wycsii', 
-    user:     'uppjvqpmklnvhjzu', 
-    password: 'xbKyu18VPzmF2fEnVFuc'
+	host:     process.env.DB_HOST, 
+	database: process.env.DB_DATABASE, 
+	user:     process.env.DB_USER, 
+	password: process.env.DB_PASS
 };
+//#endregion
+//#region JsonWebToken (jose)
+//Sirve para crear un token y enviarlo al usuario para que el lo retorne adjuntado a su proxima peticion.
+const jose = require('jose');
+//#endregion
 
 async function isAuthenticatedUser(req, res, next){ //VER 5.0 
     const { jwt } = req.cookies;

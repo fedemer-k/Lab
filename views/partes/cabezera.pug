@@ -6,7 +6,7 @@ header.p-3.bg-dark.text-white
           use(xlink:href='#bootstrap')
       ul.nav.col-12.col-lg-auto.me-lg-auto.mb-2.justify-content-center.mb-md-0
         li
-          a.nav-link.px-2.text-white(href='/solicitud') Solicitar turno
+          a.nav-link.px-2.text-white(href='/') Solicitar turno
           //- a.nav-link.px-2.text-secondary(href='#') Inicio
         li
           a.nav-link.px-2.text-white(href='#') Turnos solicitados
@@ -27,5 +27,7 @@ header.p-3.bg-dark.text-white
 
 if exito
     div.alert.alert-success #{exito}
+if error 
+    div.alert.alert-danger #{error}
 br
       

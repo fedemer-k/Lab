@@ -2,6 +2,11 @@
 //se puede utilizar la api sharp nodejs
 
 /*################################################  Librerias */
+//#region dotenv
+//toma el archivo .env y carga todas las variables a process.env
+//Esta libreria es la unica que ejecuta codigo en este bloque de librerias
+const dotenv = require('dotenv').config();
+//#endregion
 //#region Express
 //express framework backend
 const express = require("express");
@@ -18,10 +23,6 @@ const upload = require("express-fileupload");
 //Parsea cookies, las firma y las deja en formato json
 const cookieParser = require('cookie-parser');
 //#endregion
-//#region dotenv
-//toma el archivo .env y carga todas las variables a process.env
-const dotenv = require('dotenv');
-//#endregion
 //#region isAuthenticatedUser
 //Revisa si hay una cookie y comprueba su jwt. Si todo es correcto guarda todo en req.user 
 const isAuthenticatedUser = require('./middleware/authMiddleware');
@@ -29,10 +30,10 @@ const isAuthenticatedUser = require('./middleware/authMiddleware');
 //#region Mysql2
 const mysql = require("mysql2/promise");
 const cnxConfig = { 
-  host:     'bahncy9cfv5sc1wycsii-mysql.services.clever-cloud.com', 
-  database: 'bahncy9cfv5sc1wycsii', 
-  user:     'uppjvqpmklnvhjzu', 
-  password: 'xbKyu18VPzmF2fEnVFuc'
+	host:     process.env.DB_HOST, 
+	database: process.env.DB_DATABASE, 
+	user:     process.env.DB_USER, 
+	password: process.env.DB_PASS
 };
 //#endregion
 //#region onlyForDevelopment
@@ -41,9 +42,9 @@ const livereload = require("livereload");
 const connectLivereload = require("connect-livereload");
 const liveReloadServer = livereload.createServer();
 liveReloadServer.server.once("connection", () => {
-  setTimeout(() => {
-    liveReloadServer.refresh("/");
-  }, 100);
+	setTimeout(() => {
+		liveReloadServer.refresh("/");
+	}, 100);
 });
 //#endregion
 /*############################################################*/
@@ -70,10 +71,6 @@ app.use(express.static("./imagenes"));
 *********  Ejecuto todos los middlewares que ponen *************
 *********  las librerias requeridas en funcionamiento. *********
 ***************************************************************/
-//#region dotenv
-//carga todas las variables del .env al process.env
-dotenv.config();
-//#endregion
 //#region methodOverride
 //debo hacer un USE para que pueda sobreescribir el metodo
 app.use(methodOverride("_method"));
@@ -112,16 +109,85 @@ app.use('/solicitud', solicitudRoute);
 //#endregion
 /**************************************************************/
 
+//probar que pasa cuando no tengo medicos ni especialidades activas.
+app.get("/", async function (req, res){
 
-//
-app.get("/", function (req, res){
-  return res.status(500).render("error", {user: req.user, error: `ERROR 404`});
+	const exito = req.query.exito ? req.query.exito : "";
+	const error = req.query.error ? req.query.error : "";
+
+	let connection;
+    try{
+        connection = await mysql.createConnection(cnxConfig);
+        
+        //#region Obtengo todas las Especialidades que tienen medicos y matriculas activas.
+        const [especialidades] = await connection.execute(`
+            SELECT DISTINCT
+                e.id_especialidad,
+                e.nombre_especialidad
+            FROM
+                medico me
+            JOIN
+                matricula ma
+                ON me.id_medico = ma.id_medico
+            JOIN
+                especialidad e
+                ON ma.id_especialidad = e.id_especialidad
+            JOIN
+                usuario u 
+                ON me.id_usuario = u.id_usuario
+            WHERE
+                me.activo = 1 AND ma.activo = 1;
+        ;`);
+        //#endregion
+        
+        let especialidadesYMedicos = [];
+        //Recorro cada especialidad para obtener todos los medicos separados por dicha especialidad
+        for (const especialidad of especialidades) {
+            const [medicos] = await connection.execute(`
+                SELECT
+                    u.nombres,
+                    u.apellidos,
+                    me.id_medico,
+                    e.id_especialidad,
+                    e.nombre_especialidad
+                FROM
+                    medico me
+                JOIN
+                    matricula ma
+                    ON me.id_medico = ma.id_medico
+                JOIN
+                    especialidad e
+                    ON ma.id_especialidad = e.id_especialidad
+                JOIN
+                    usuario u 
+                    ON me.id_usuario = u.id_usuario
+                WHERE
+                    me.activo = 1 AND ma.activo = 1 AND e.id_especialidad = ?;
+                ;`,[especialidad.id_especialidad]
+            );
+
+            especialidadesYMedicos.push({ 
+                especialidad, 
+                medicos
+            });
+
+        }
+
+        return res.status(200).render("index", {user: req.user, especialidadesYMedicos, exito: exito, error: error});
+    }catch(err){
+        return res.status(500).render("error", {user: req.user, error: `ERROR EN LA BASE DE DATOS ${err}`});
+    }finally{
+        if(connection){
+            await connection.end();
+        }
+    }
+	return res.status(500).render("index", {user: req.user, error: `ERROR 404`});
 });
 
 
 //error 404
 app.get("*", function (req, res){
-  return res.status(500).render("error", {user: req.user, error: `ERROR 404`});
+	return res.status(500).render("error", {user: req.user, error: `ERROR 404`});
 });
 
 //levanto el servidor

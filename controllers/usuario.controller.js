@@ -1,17 +1,11 @@
 //#region Mysql2
 const mysql = require("mysql2/promise");
 const cnxConfig = { 
-    host:     'bahncy9cfv5sc1wycsii-mysql.services.clever-cloud.com', 
-    database: 'bahncy9cfv5sc1wycsii', 
-    user:     'uppjvqpmklnvhjzu', 
-    password: 'xbKyu18VPzmF2fEnVFuc'
+	host:     process.env.DB_HOST, 
+	database: process.env.DB_DATABASE, 
+	user:     process.env.DB_USER, 
+	password: process.env.DB_PASS
 };
-// const cnxConfig = { 
-//     host:     'localhost', 
-//     database: 'labiiac', 
-//     user:     'root', 
-//     password: '1231233'
-// };
 //#endregion
 //#region UUID
 // generador de id unicas

@@ -24,10 +24,13 @@ const solicitudController = require("../controllers/solicitud.controller.js");
 const router = express.Router();
 
 //por defecto muestro todos los turnos que puedo sacar
-router.route("/").get(solicitudController.getEmitirSolicitud);
+router.route("/").post(solicitudController.getEmitirSolicitud);
 
-//recibo un bloque de horario que corresponde a una solicitud de turno 
-router.route("/emitir/:bloque").get(solicitudController.addRequest);
+//Recibo la especialidad, medico y fecha por url y solicitio confirmacion de solicitud de turno
+router.route("/emitir/:bloque").get(solicitudController.showAddRequest);
+
+//Recibo todos los datos de solicitud de turno, corroboro que se pueda, lo agrego y respondo
+router.route("/emitir/:bloque").post(solicitudController.addRequest);
 
 //Muestro todos los turnos que trabaja y que no trabaja el medico recibido por id
 router.route("/rango/:id_medico").get(solicitudController.getShowRange);

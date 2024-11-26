@@ -78,10 +78,15 @@ html
 
                 //Se utiliza como nombre de turno
                 let diaTitle = `del dia ${dayName} ${date.getDay()}/${date.getMonth()}`
-                for (let i = -1; i < 23; i++) {
+                for (let i = 0; i < 24; i++) {
                     //Guardo la hora para mayor legibilidad
-                    let hora = (i+1).toString().padStart(2, '0');
-                    let horaSiguiente = (i+2).toString().padStart(2, '0');
+                    let hora = (i).toString().padStart(2, '0');
+                    let horaSiguiente = (i+1).toString().padStart(2, '0');
+
+                    //si me pase (la hora 24 no existe si la hora 00 si existe)
+                    if(i == 23){
+                        horaSiguiente = (0).toString().padStart(2, '0');
+                    }
 
                     let primeraMediaHora = { 
                         title: diaTitle, 
@@ -216,7 +221,7 @@ html
         include ../partes/cabezera.pug
         .container
             div(style="justify-content:space-between")
-                h1 Solicitando turno medico
+                h1 Solicitando turno de #{especialidad.nombre_especialidad}
                 h4 con el doctor #{medico.nombres} #{medico.apellidos}
             br
         #calendar
