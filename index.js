@@ -23,10 +23,6 @@ const upload = require("express-fileupload");
 //Parsea cookies, las firma y las deja en formato json
 const cookieParser = require('cookie-parser');
 //#endregion
-//#region isAuthenticatedUser
-//Revisa si hay una cookie y comprueba su jwt. Si todo es correcto guarda todo en req.user 
-const isAuthenticatedUser = require('./middleware/authMiddleware');
-//#endregion
 //#region Mysql2
 const mysql = require("mysql2/promise");
 const cnxConfig = { 
@@ -54,7 +50,10 @@ if(process.env.DEVELOPER_MODE == 1){
 }else{
     console.log("DEVELOPER MODE OFF");
 }
-console.log(process.env.DEVELOPER_MODE)
+//#endregion
+//#region isAuthenticatedUser
+//Revisa si hay una cookie y comprueba su jwt. Si todo es correcto guarda todo en req.user 
+const isAuthenticatedUser = require('./middleware/authMiddleware');
 //#endregion
 /*############################################################*/
 
@@ -100,9 +99,6 @@ app.use(cookieParser());
 //connect middleware for adding the Livereload script to the response
 if(process.env.DEVELOPER_MODE == 1){
     app.use(connectLivereload());
-    console.log("DEVELOPER MODE ON");
-}else{
-    console.log("DEVELOPER MODE OFF");
 }
 //#endregion
 //#region isAuthenticatedUser

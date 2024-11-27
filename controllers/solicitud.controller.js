@@ -95,7 +95,7 @@ async function getEmitirSolicitud(req, res){
 
         //Tomo todas sus solicitudes de consulta
         const [consultas] = await connection.execute(` 
-            SELECT id_solicitud_consulta, id_usuario, id_medico, id_especialidad, CONVERT_TZ(horario, @@session.time_zone, '-06:00')  AS horario, aceptada
+            SELECT id_solicitud_consulta, id_usuario, id_medico, id_especialidad, CONVERT_TZ(horario, @@session.time_zone, '${process.env.TIME_ZONE}')  AS horario, aceptada
             FROM solicitud_consulta 
             WHERE id_medico = ?`,
             [id_medico]
@@ -227,7 +227,7 @@ async function showAddRequest(req, res){
         );
 
         if (medico.length === 0){
-            return res.status(403).render("error", {user: req.user, error: "Medico no encontrado"});
+            return res.redirect(`/?error=Medico no encontrado`);
         }
 
         // Obtengo la especialidad enviada
@@ -239,7 +239,7 @@ async function showAddRequest(req, res){
         );
 
         if (especialidad.length === 0){
-            return res.status(403).render("error", {user: req.user, error: "Especialidad no encontrado"});
+            return res.redirect(`/?error=Especialidad no encontrada`);
         }
 
         //Me fijo si la solicitud, ya fue enviada con anterioridad
@@ -252,7 +252,7 @@ async function showAddRequest(req, res){
         );
 
         if(consulta.length !== 0){
-            return res.redirect(`/solicitud?exito=Lo sentimos, el medico ${medico[0].nombres} ${medico[0].apellidos} esta ocupado para el dia ${diaNombre} y la hora ${hora}`);
+            return res.redirect(`/?error=Lo sentimos, el medico ${medico[0].nombres} ${medico[0].apellidos} esta ocupado para el dia ${fechaYHora} (${diaNombre}) y la hora ${hora}`);
         }
 
         const datos = {
@@ -301,7 +301,7 @@ async function addRequest(req, res){
         );
 
         if (medico.length === 0){
-            return res.status(403).render("error", {user: req.user, error: "Medico no encontrado"});
+            return res.redirect(`/?error=Medico no encontrado`);
         }
         //#endregion
 
@@ -314,7 +314,7 @@ async function addRequest(req, res){
         );
 
         if (especialidad.length === 0){
-            return res.status(403).render("error", {user: req.user, error: "Especialidad no encontrado"});
+            return res.redirect(`/?error=Especialidad no encontrada`);
         }
         //#endregion
 
@@ -338,7 +338,8 @@ async function addRequest(req, res){
         );
 
         if (matricula.length === 0){
-            return res.status(403).render("error", {user: req.user, error: "Este medico no tiene esta matricula"});
+            return res.redirect(`/?error=Este medico no tiene esta matricula`);
+
         }
         //#endregion
 
@@ -352,7 +353,7 @@ async function addRequest(req, res){
         );
 
         if(consulta.length !== 0){
-            return res.redirect(`/solicitud?exito=Lo sentimos, el medico ${medico[0].nombres} ${medico[0].apellidos} esta ocupado para el dia ${diaNombre} y la hora ${hora}`);
+            return res.redirect(`/?error=Lo sentimos, el medico ${medico[0].nombres} ${medico[0].apellidos} esta ocupado para el dia ${fechaYHora} (${diaNombre}) y la hora ${hora}`);
         }
         //#endregion
 
@@ -365,7 +366,7 @@ async function addRequest(req, res){
         );
 
         if(result.affectedRows === 1){
-            return res.redirect(`/?exito=El usuario  ${req.user.nombres} ${req.user.apellidos} acaba de solicitar un turno para el dia ${diaNombre} y la hora ${hora}`);
+            return res.redirect(`/?exito=El usuario  ${req.user.nombres} ${req.user.apellidos} acaba de solicitar un turno de ${especialidad[0].nombre_especialidad} para el dia ${fecha} y la hora ${hora}`);
         }else{
             return res.status(500).render("error", {user: req.user, error: `No se pudo agregar el bloque de horario`});
         }
@@ -377,6 +378,8 @@ async function addRequest(req, res){
         }
     }
 }
+
+//Gestion de horario de un medico.
 
 async function getShowRange(req, res){
     // Verificación de seguridad: Si no es administrador, no debería tener acceso
